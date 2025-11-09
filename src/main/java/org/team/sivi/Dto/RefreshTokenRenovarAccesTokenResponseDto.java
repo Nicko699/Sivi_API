@@ -1,28 +1,17 @@
 package org.team.sivi.Dto;
-//Dto para dar respuesta al inicio de sesion
-public class UsuarioIniciarSesionResponseDto {
 
-    private String mensaje;
+public class RefreshTokenRenovarAccesTokenResponseDto {
     private String accessToken;
     private String tipoToken;
     private RefreshTokenResponseDto refreshToken;
 
-    public UsuarioIniciarSesionResponseDto() {
+    public RefreshTokenRenovarAccesTokenResponseDto() {
     }
 
-    public UsuarioIniciarSesionResponseDto(String mensaje, String accessToken, String tipoToken, RefreshTokenResponseDto refreshToken) {
-        this.mensaje = mensaje;
+    public RefreshTokenRenovarAccesTokenResponseDto(String accessToken, String tipoToken, RefreshTokenResponseDto refreshToken) {
         this.accessToken = accessToken;
         this.tipoToken = tipoToken;
         this.refreshToken = refreshToken;
-    }
-
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
     }
 
     public String getAccessToken() {

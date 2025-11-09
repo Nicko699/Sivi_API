@@ -6,4 +6,5 @@ import org.team.sivi.Model.Rol;
 
 @Repository
 public interface RolRepository extends JpaRepository<Rol,Long> {
+
 }

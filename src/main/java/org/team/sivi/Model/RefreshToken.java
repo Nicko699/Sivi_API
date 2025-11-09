@@ -1,7 +1,5 @@
 package org.team.sivi.Model;
-
 import jakarta.persistence.*;
-
 import java.time.Instant;
 //Creamos la clase RefreshToken
 //Indicamos con @Entity que va a ser una entidad en la bd
@@ -13,7 +11,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String refreshToken;
-    private String refreshTokenEncript;
+    private String refreshTokenHash;
     private Instant fechaCreacion;
     private Instant fechaExpiracion;
     private boolean activo;
@@ -24,10 +22,10 @@ public class RefreshToken {
     public RefreshToken() {
     }
     //Creamos el constructor con todos sus atributos
-    public RefreshToken(Long id, String refreshToken, String refreshTokenEncript, Instant fechaCreacion, Instant fechaExpiracion, boolean activo, Usuario usuario) {
+    public RefreshToken(Long id, String refreshToken, String refreshTokenHash, Instant fechaCreacion, Instant fechaExpiracion, boolean activo, Usuario usuario) {
         this.id = id;
         this.refreshToken = refreshToken;
-        this.refreshTokenEncript = refreshTokenEncript;
+        this.refreshTokenHash = refreshTokenHash;
         this.fechaCreacion = fechaCreacion;
         this.fechaExpiracion = fechaExpiracion;
         this.activo = activo;
@@ -51,12 +49,12 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public String getRefreshTokenEncript() {
-        return refreshTokenEncript;
+    public String getRefreshTokenHash() {
+        return refreshTokenHash;
     }
 
-    public void setRefreshTokenEncript(String refreshTokenEncript) {
-        this.refreshTokenEncript = refreshTokenEncript;
+    public void setRefreshTokenHash(String refreshTokenHash) {
+        this.refreshTokenHash = refreshTokenHash;
     }
 
     public Instant getFechaCreacion() {

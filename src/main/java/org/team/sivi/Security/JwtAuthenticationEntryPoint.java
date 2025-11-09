@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +28,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Map<String,String>mensaje=new HashMap<>();
         //Personalizamos el mensaje
         mensaje.put("estado","401");
-        mensaje.put("fecha", String.valueOf(LocalTime.now()));
-        mensaje.put("mensaje","No estás autorizado para ingresar al sistema. Token inválido o expirado");
+        mensaje.put("fecha", String.valueOf(LocalDateTime.now()));
+        mensaje.put("mensaje",authException.getMessage());
        //Convertimos el mensaje a un Json
         String json= new ObjectMapper().writeValueAsString(mensaje);
         //Asignamos el mensaje a la respuesta

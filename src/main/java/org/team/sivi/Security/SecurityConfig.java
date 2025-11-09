@@ -14,6 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
 //Indicamos que va a ser una clase solo para la configuracion
 @Configuration
 @EnableWebSecurity
@@ -44,18 +51,50 @@ public class SecurityConfig {
 
         return new BCryptPasswordEncoder();
     }
+
+    //  BEAN PARA CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Conectarse con el frontend
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        // Métodos HTTP permitidos
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Permitir todos los headers
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // Exponer el header Authorization para que el frontend pueda leerlo
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Permitir credenciales (cookies, authorization headers, etc.)
+        configuration.setAllowCredentials(true);
+
+        // Cache de la configuración preflight por 1 hora
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
     // Bean que configura toda la seguridad web de Spring Security
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable) // Desactivamos el CSRF ya que se usa JWT y no lo tradicional son sesiones
+        httpSecurity.cors(cors->cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable) // Desactivamos el CSRF ya que se usa JWT y no lo tradicional son sesiones
                 .formLogin(AbstractHttpConfigurer::disable) //Desactivamos el formulario por defecto que trae spring ya que no lo vamos usar
                 .httpBasic(AbstractHttpConfigurer::disable)//Desactivamos la autenticacion http
                 .exceptionHandling(exception->exception.authenticationEntryPoint
                         (jwtAuthenticationEntryPoint).accessDeniedHandler(jwtAccesDeniedHandler))//Configuramos las excepciones, usuario no autenticado y usuario sin permisos
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Configuramos nuestro aplicacion a Stateles, Va  usar tokens
-                .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/crearCuenta","/usuario/iniciarSesion").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/usuario/sinCredenciales").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints
+                .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/crearCuenta","/usuario/iniciarSesion","/resetToken/recuperarContraseña","/resetToken/cambiarContraseña").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/usuario/sinCredenciales").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/usuario/eliminarUsuario/{id}").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints
         //Le decimos a spring que ejecute nuestro filtro personalizado primero a cualquier otro que el tenga
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     //Retornamos la configuracion y construimos.

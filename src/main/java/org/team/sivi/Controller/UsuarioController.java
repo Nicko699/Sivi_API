@@ -3,12 +3,14 @@ package org.team.sivi.Controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.team.sivi.Dto.UsuarioCrearCuentaRequestDto;
-import org.team.sivi.Dto.UsuarioCrearCuentaResponseDto;
-import org.team.sivi.Dto.UsuarioIniciarSesionRequestDto;
-import org.team.sivi.Dto.UsuarioIniciarSesionResponseDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaRequestDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaResponseDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionRequestDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionResponseDto;
 import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Service.UsuarioService;
@@ -100,5 +102,17 @@ public class UsuarioController {
     }
 
 
+    @DeleteMapping("/eliminarUsuario/{id}")
+    public ResponseEntity<Map<String,String>> eliminarUsuario(@PathVariable  Long id) throws NotFoundException{
+
+        Map<String,String>mensaje=new HashMap<>();
+
+        usuarioService.eliminarUsuario(id);
+
+        mensaje.put("mensaje","tu usuario fue eliminado");
+
+        return ResponseEntity.ok(mensaje);
+
+    }
 
 }

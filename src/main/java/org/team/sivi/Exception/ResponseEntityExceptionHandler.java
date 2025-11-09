@@ -2,6 +2,7 @@ package org.team.sivi.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -59,4 +60,15 @@ public class ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Mensaje>unauthorizedException(UnauthorizedException exception){
+
+        Mensaje mensajeError=new Mensaje(401 ,HttpStatus.UNAUTHORIZED,exception.getMessage(),LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mensajeError);
+
+    }
+
+
 }

@@ -25,16 +25,19 @@ public class Usuario {
     @ManyToMany()
     private List<Rol>listaRol;
    //Indicamos que va a tener una relacion 1 a N con refreshToken
-    //Tambien especificamos que refreshToken va a ser el dueño d ela relacion
+    //También especificamos que refreshToken va a ser el dueño de la relacion
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<RefreshToken>listaRefreshTokens;
+
+    //Relacion 1 a 1 con resetToken
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private ResetToken resetToken;
 
     //Creamos el constructor vacío
     public Usuario() {
     }
 
-     //Creamos el constructor con todos sus atributos
-    public Usuario(Long id, String nombre, String correo, String password, boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Rol> listaRol, List<RefreshToken> listaRefreshTokens) {
+    public Usuario(Long id, String nombre, String correo, String password, boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Rol> listaRol, List<RefreshToken> listaRefreshTokens, ResetToken resetToken) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
@@ -44,9 +47,9 @@ public class Usuario {
         this.fechaActualizacion = fechaActualizacion;
         this.listaRol = listaRol;
         this.listaRefreshTokens = listaRefreshTokens;
+        this.resetToken = resetToken;
     }
 
-    //Creamos los getters y setters
     public Long getId() {
         return id;
     }
@@ -117,5 +120,13 @@ public class Usuario {
 
     public void setListaRefreshTokens(List<RefreshToken> listaRefreshTokens) {
         this.listaRefreshTokens = listaRefreshTokens;
+    }
+
+    public ResetToken getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(ResetToken resetToken) {
+        this.resetToken = resetToken;
     }
 }

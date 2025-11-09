@@ -36,7 +36,7 @@ public class RefreshTokenUtils {
         if (usuario.isPresent()){
             Usuario usuarioGet=usuario.get();
             //Encontramos al refreshToken en la bd si hay alguno activo
-            Optional<RefreshToken>refreshToken=refreshTokenRepository.findRefreshTokenByUsuarioAndActivo(usuarioGet,true);
+            Optional<RefreshToken>refreshToken=refreshTokenRepository.findByUsuarioAndActivo(usuarioGet,true);
            // comprobamos si el RefreshToken está en la bd
             if (refreshToken.isPresent()){
 
@@ -57,11 +57,11 @@ public class RefreshTokenUtils {
             //Creamos la cadena de caracteres para el refreshTokenC
             String refreshTokenC=UUID.randomUUID().toString();
             //Encriptamos el refreshTokenC
-            String refreshTokenEncript=passwordEncoder.encode(refreshTokenC);
+            String refreshTokenHash=passwordEncoder.encode(refreshTokenC);
 
             //Creamos el nuevo refreshToken
             nuevoRefreshToken.setRefreshToken(refreshTokenId);
-            nuevoRefreshToken.setRefreshTokenEncript(refreshTokenEncript);
+            nuevoRefreshToken.setRefreshTokenHash(refreshTokenHash);
             nuevoRefreshToken.setFechaCreacion(fechaCreacion);
             nuevoRefreshToken.setFechaExpiracion(fechaExpiracion);
             nuevoRefreshToken.setActivo(true);
@@ -84,7 +84,7 @@ public class RefreshTokenUtils {
     @Scheduled(cron = "0 0 3 * * ?")
     public void limpiarTokensAntiguos() {
         Instant fechaLimite = Instant.now().minus(Duration.ofDays(30));
-        refreshTokenRepository.deleteRefreshTokenByFechaExpiracionBefore(fechaLimite);
+        refreshTokenRepository.deleteByFechaExpiracionBefore(fechaLimite);
     }
 
 

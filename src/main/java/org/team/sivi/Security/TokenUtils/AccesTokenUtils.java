@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.team.sivi.Model.Rol;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +23,7 @@ public class AccesTokenUtils {
     // Inyectamos desde application.properties el valor de la firma de 32 caracteres para el JWT.
     @Value("${spring.security.firma}")
     private String firma;
-    //Esta variable es usada para contener la clave secrete para la firmar el JWT
+    //Esta variable es usada para contener la clave secreta para la firmar el JWT
     private SecretKey key;
     //Indicamos que este metodo se va a ejecutar automáticamente después de que Spring haya inyectado los valores.
     //Inicializamos la variable key a partir del string firma
@@ -33,8 +34,10 @@ public class AccesTokenUtils {
         // usado para la firma
         this.key= Keys.hmacShaKeyFor(firma.getBytes(StandardCharsets.UTF_8));
     }
-    //Creamos un metodo para crear el Token Jwt
-    public String CrearAccessToken(Authentication authentication){
+
+   //Metodo para crear el accesToken por medio de Authentication
+    //Lo usamos para crear por primera vez el accessToken, Cuando el usuario inicia sesión
+    public String token(Authentication authentication){
         // Creamos una lista para almacenar los roles del usuario
         List<String>listaRol=new ArrayList<>();
         // Recorremos los GrantedAuthority que vienen de Authentication
@@ -42,14 +45,33 @@ public class AccesTokenUtils {
 
             listaRol.add(authority.getAuthority());
         }
+        return CrearAccessToken(authentication.getName(),listaRol);
+    }
+  //Metodo crearAccesToken por medio de los datos correo y Rol
+    //Lo usamos para renovar el accessToken cuando se venza
+    public String token(String correo, List<Rol>listaRoles){
+
+        List<String>listaRol=new ArrayList<>();
+
+        for (Rol rol:listaRoles){
+
+            listaRol.add(rol.getNombre());
+        }
+        return CrearAccessToken(correo,listaRol);
+    }
+
+
+    //Creamos un metodo para crear el Token Jwt
+    public String CrearAccessToken(String correo,List<String>listaRoles){
+
         // Obtenemos la fecha y hora actual como momento de creación del token
         Instant fechaCreacion=Instant.now();
         Instant fechaExpiracion=fechaCreacion.plus(Duration.ofMinutes(5));
 
         //Creamos el Jwt token y retornamos
       return  Jwts.builder()
-                .subject(authentication.getName())//Agregamos el email que es el identificador del usuario
-                .claim("roles",listaRol) //Agregamos la lista roles del usuario
+                .subject(correo)//Agregamos el email que es el identificador del usuario
+                .claim("roles",listaRoles) //Agregamos la lista roles del usuario
                 .issuedAt(Date.from(fechaCreacion)) //Agregamos la fecha creacion dle token
                 .expiration(Date.from(fechaExpiracion)) //Agregamos la fecha expiracion del token
                 .signWith(key)//Agregamos la firma
@@ -72,7 +94,6 @@ public class AccesTokenUtils {
 
     //Creamos un metodo para validar el Acces token
     public boolean validarToken(String token){
-
         //Si el Jwt es valido retornamos true
         try{
 

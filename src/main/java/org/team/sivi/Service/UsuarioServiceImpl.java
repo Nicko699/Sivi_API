@@ -8,12 +8,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.sivi.Dto.*;
+import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaRequestDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaResponseDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionRequestDto;
+import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionResponseDto;
 import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Mapper.UsuarioMapper;
 import org.team.sivi.Model.Rol;
 import org.team.sivi.Model.Usuario;
-import org.team.sivi.Repository.RefreshTokenRepository;
 import org.team.sivi.Repository.RolRepository;
 import org.team.sivi.Repository.UsuarioRepository;
 import org.team.sivi.Security.TokenUtils.AccesTokenUtils;
@@ -73,7 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         //Encriptamos la contraseña del usuario para protegerla
         String passwordEncript=passwordEncoder.encode(usuario.getPassword());
-        //setteamos algunos datos del usuario que no fueron mappeados o la contraseña que necesitaba encriptacion
+        //setteamos algunos datos del usuario que no fueron mappeados o la contraseña que necesitaba encriptación
         usuario.setPassword(passwordEncript);
         usuario.setActivo(true);
         usuario.setFechaCreacion(LocalDateTime.now());
@@ -92,10 +95,25 @@ public class UsuarioServiceImpl implements UsuarioService {
     // Guardamos la sesión autenticada en el contexto de seguridad de spring
         SecurityContextHolder.getContext().setAuthentication(authentication);
        //Creamos el accessToken Jwt
-        String accessToken= accesTokenUtils.CrearAccessToken(authentication);
+        String accessToken= accesTokenUtils.token(authentication);
         //Creamos el refreshToken y el metodo ya lo guarda en la bd
         RefreshTokenResponseDto refreshToken=refreshTokenUtils.crearRefreshToken(authentication.getName());
        //Retornamos la respuesta al front/postman
         return new UsuarioIniciarSesionResponseDto("iniciaste sesión exitosamente!!!",accessToken   ,"Bearer ",refreshToken);
+    }
+
+    @Override
+    public void eliminarUsuario(Long id) throws NotFoundException {
+        Optional<Usuario>usuario=usuarioRepository.findById(id);
+
+        if (usuario.isPresent()){
+
+            Usuario usuarioGet=usuario.get();
+            usuarioRepository.deleteById(usuarioGet.getId());
+
+        } else {
+
+            throw new RuntimeException("Error al procesar la solicitud");
+        }
     }
 }

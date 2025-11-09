@@ -1,4 +1,6 @@
-package org.team.sivi.Dto;
+package org.team.sivi.Dto.UsuarioDto;
+import org.team.sivi.Dto.RolResponseDto;
+
 import java.util.List;
 //Creamos un dto para mandar la respuesta del backed al usuario UsuarioCrearCuentaResponseDto
 public class UsuarioCrearCuentaResponseDto {

@@ -1,4 +1,4 @@
-package org.team.sivi.Dto;
+package org.team.sivi.Dto.UsuarioDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
