@@ -1,14 +1,8 @@
 package org.team.sivi.Service;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.sivi.Dto.ResetTokenCambiarPasswordRequestDto;
-import org.team.sivi.Dto.ResetTokenResponseDto;
 import org.team.sivi.Dto.UsuarioDto.ResetTokenRecuperarPasswordRequestDto;
 import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
@@ -16,7 +10,7 @@ import org.team.sivi.Model.ResetToken;
 import org.team.sivi.Model.Usuario;
 import org.team.sivi.Repository.ResetTokenRepository;
 import org.team.sivi.Repository.UsuarioRepository;
-import org.team.sivi.Security.TokenUtils.ResetTokenUtils;
+
 
 import java.time.Instant;
 import java.util.Optional;

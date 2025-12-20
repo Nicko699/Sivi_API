@@ -1,20 +1,14 @@
 package org.team.sivi.Controller;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.team.sivi.Dto.RefreshTokenRenovarAccesTokenRequestDto;
+import org.springframework.web.bind.annotation.*;
 import org.team.sivi.Dto.RefreshTokenRenovarAccesTokenResponseDto;
-import org.team.sivi.Dto.ResetTokenCambiarPasswordRequestDto;
-import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Exception.UnauthorizedException;
 import org.team.sivi.Service.RefreshTokenService;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/refreshToken")
@@ -25,15 +19,41 @@ public class RefreshTokenController {
     public RefreshTokenController(RefreshTokenService refreshTokenService) {
         this.refreshTokenService = refreshTokenService;
     }
-   //Endpoint de renovarToken
-    @PostMapping("/renovarToken")
-    public ResponseEntity<RefreshTokenRenovarAccesTokenResponseDto> renovarToken(@Valid @RequestBody RefreshTokenRenovarAccesTokenRequestDto renovarAccesTokenRequestDto) throws NotFoundException, UnauthorizedException{
 
-        RefreshTokenRenovarAccesTokenResponseDto renovarAccesTokenResponseDto=refreshTokenService.renovarToken(renovarAccesTokenRequestDto);
+    //Endpoint de renovarToken
+    @PostMapping("/renovarToken")
+    public ResponseEntity<RefreshTokenRenovarAccesTokenResponseDto> renovarToken(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @CookieValue(value = "refreshTokenId", required = false) String refreshTokenId,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken
+    ) throws NotFoundException, UnauthorizedException {
+
+        // 🐛 DEBUG: Ver qué cookies llegan
+        Cookie[] cookies = request.getCookies();
+        System.out.println("=== COOKIES RECIBIDAS EN /renovarToken ===");
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println("  ✅ " + cookie.getName() + " = " + cookie.getValue());
+            }
+        } else {
+            System.out.println("  ❌ NO HAY COOKIES EN LA REQUEST");
+        }
+        System.out.println("==========================================");
+
+        System.out.println("📋 @CookieValue refreshTokenId: " + refreshTokenId);
+        System.out.println("📋 @CookieValue refreshToken: " + refreshToken);
+        System.out.println("==========================================");
+
+        // Validación manual por si @CookieValue no funciona
+        if (refreshTokenId == null || refreshToken == null) {
+            System.out.println("⚠️ Cookies faltantes, retornando error 400");
+            return ResponseEntity.status(400).body(null);
+        }
+
+        RefreshTokenRenovarAccesTokenResponseDto renovarAccesTokenResponseDto =
+                refreshTokenService.renovarToken(response, refreshTokenId, refreshToken);
 
         return ResponseEntity.ok().body(renovarAccesTokenResponseDto);
     }
-
-
-
 }

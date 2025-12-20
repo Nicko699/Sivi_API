@@ -17,7 +17,7 @@ public class ResetToken {
     private boolean valido;
 
   //Relación 1 a 1 con usuario
-    @OneToOne
+    @OneToOne()
     private Usuario usuario;
 
     public ResetToken() {

@@ -1,5 +1,6 @@
 package org.team.sivi.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Usuario {
     private List<Rol>listaRol;
    //Indicamos que va a tener una relacion 1 a N con refreshToken
     //También especificamos que refreshToken va a ser el dueño de la relacion
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<RefreshToken>listaRefreshTokens;
 

@@ -58,8 +58,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             Usuario usuarioGet=usuario.get();
             //Retornamos un objeto User que implementa la interfaz UserDetails de Spring Security.
         // Este objeto contiene la información esencial del usuario para poder validar que es el y poder autenticarse
-            return new User(usuarioGet.getCorreo(),usuarioGet.getPassword(),
-                    usuarioGet.isActivo(),true,true,true,authorities(usuarioGet.getListaRol()));
+            return new CustomUserDetails(usuarioGet.getCorreo()
+                    ,usuarioGet.getNombre(),usuarioGet.getPassword(),usuarioGet.isActivo(),authorities(usuarioGet.getListaRol()));
 
         }
         //Si no, lanzamos una excepción, indicando que el usuario no se encuentra en el sistema

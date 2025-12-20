@@ -6,6 +6,7 @@ import org.team.sivi.Model.RefreshToken;
 import org.team.sivi.Model.Usuario;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +17,10 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken,Long>
   void deleteByFechaExpiracionBefore(Instant fechaExpiracionBefore);
 
   Optional<RefreshToken> findByRefreshToken(String refreshToken);
+
+  List<RefreshToken> findAllByUsuarioAndActivo(Usuario usuario, boolean activo);
+
+
 
 
 

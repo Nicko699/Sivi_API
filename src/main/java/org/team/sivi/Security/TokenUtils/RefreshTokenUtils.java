@@ -12,6 +12,8 @@ import org.team.sivi.Repository.UsuarioRepository;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,17 +38,17 @@ public class RefreshTokenUtils {
         if (usuario.isPresent()){
             Usuario usuarioGet=usuario.get();
             //Encontramos al refreshToken en la bd si hay alguno activo
-            Optional<RefreshToken>refreshToken=refreshTokenRepository.findByUsuarioAndActivo(usuarioGet,true);
+            List<RefreshToken>encontrarRefreshToken=refreshTokenRepository.findAllByUsuarioAndActivo(usuarioGet,true);
            // comprobamos si el RefreshToken está en la bd
-            if (refreshToken.isPresent()){
+            List<RefreshToken>refreshTokensInactivo=new ArrayList<>();
 
-                RefreshToken refreshTokenGet=refreshToken.get();
-                //Cambiamos el estado del refreshToken encontrado de activo true a false
-                refreshTokenGet.setActivo(false);
-               //Guardamos el refreshToken en la bd
-                refreshTokenRepository.save(refreshTokenGet);
-
+            for (RefreshToken refreshToken:encontrarRefreshToken){
+              refreshToken.setActivo(false);
+              refreshTokensInactivo.add(refreshToken);
             }
+            //Guardamos el refreshToken en la bd
+            refreshTokenRepository.saveAll(refreshTokensInactivo);
+
            //Inicializamos el nuevo refreshToken
             RefreshToken nuevoRefreshToken=new RefreshToken();
 

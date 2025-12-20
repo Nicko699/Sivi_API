@@ -20,7 +20,7 @@ public interface ResetTokenRepository extends JpaRepository<ResetToken,Long> {
     Optional<ResetToken> findByUsuario(Usuario usuario);
 
 
-    // ✅ Eliminar por el ID del propio ResetToken
+    //  Eliminar por el ID del propio ResetToken
     @Modifying
     @Query("DELETE FROM ResetToken r WHERE r.id = :id")
     void deleteResetTokenById(@Param("id") Long id);

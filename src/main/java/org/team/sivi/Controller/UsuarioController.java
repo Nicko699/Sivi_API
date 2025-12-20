@@ -1,16 +1,14 @@
 package org.team.sivi.Controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaRequestDto;
-import org.team.sivi.Dto.UsuarioDto.UsuarioCrearCuentaResponseDto;
-import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionRequestDto;
-import org.team.sivi.Dto.UsuarioDto.UsuarioIniciarSesionResponseDto;
+import org.team.sivi.Dto.UsuarioDto.*;
 import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Service.UsuarioService;
@@ -32,6 +30,7 @@ public class UsuarioController {
     // Creamos una nueva cuenta de usuario
     // Si sale bien devuelve el estado 201 (Created) y en el cuerpo de la respuesta los datos del usuario creado.
     // También en la cabecera dejamos la URL del nuevo usuario creado.
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/crearCuenta")
     public ResponseEntity<UsuarioCrearCuentaResponseDto> crearCuenta(@Valid @RequestBody UsuarioCrearCuentaRequestDto crearCuentaRequestDto) throws BadRequestException, NotFoundException{
 
@@ -49,9 +48,9 @@ public class UsuarioController {
     // Si las credenciales son correctas devuelve un estado 200 (OK) con el mensaje y
     // junto con el token de acceso y refresh.
     @PostMapping("/iniciarSesion")
-    public ResponseEntity<UsuarioIniciarSesionResponseDto> iniciarSesion(@Valid @RequestBody  UsuarioIniciarSesionRequestDto usuarioIniciarSesionRequestDto) throws NotFoundException{
+    public ResponseEntity<UsuarioIniciarSesionResponseDto> iniciarSesion(HttpServletResponse response, @Valid @RequestBody  UsuarioIniciarSesionRequestDto usuarioIniciarSesionRequestDto) throws NotFoundException{
 
-        UsuarioIniciarSesionResponseDto  iniciarSesionResponse=usuarioService.iniciarSesion(usuarioIniciarSesionRequestDto);
+        UsuarioIniciarSesionResponseDto  iniciarSesionResponse=usuarioService.iniciarSesion(response,usuarioIniciarSesionRequestDto);
 
         return ResponseEntity.ok(iniciarSesionResponse);
     }
@@ -79,7 +78,7 @@ public class UsuarioController {
     }
 
     //Endpoint para el ingreso de cualquier usuario autenticado
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','VEND')")
     @GetMapping("/todosAutenticados")
     public ResponseEntity<Map<String,String>>permitirTodosAutenticados(){
 
@@ -89,8 +88,9 @@ public class UsuarioController {
 
         return   ResponseEntity.ok(mensaje);
     }
+
     //Endpoint para el ingreso a solo rol USER
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('VEND')")
     @GetMapping("/soloUser")
     public ResponseEntity<Map<String,String>>permitirSoloUser(){
 
@@ -103,7 +103,7 @@ public class UsuarioController {
 
 
     @DeleteMapping("/eliminarUsuario/{id}")
-    public ResponseEntity<Map<String,String>> eliminarUsuario(@PathVariable  Long id) throws NotFoundException{
+    public ResponseEntity<Map<String,String>> eliminarUsuario(@PathVariable  Long id) throws NotFoundException, BadRequestException{
 
         Map<String,String>mensaje=new HashMap<>();
 
@@ -114,5 +114,25 @@ public class UsuarioController {
         return ResponseEntity.ok(mensaje);
 
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/obtenerUsuarios")
+    public ResponseEntity<Page<UsuarioListaResponseDto>> obtenerListaUsuarios(Pageable pageable) throws NotFoundException{
+
+        Page<UsuarioListaResponseDto>listaUsuarios=usuarioService.obtenerListaUsuarios(pageable);
+
+        return ResponseEntity.ok(listaUsuarios);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/ObtenerUsuariosFiltrados")
+    public ResponseEntity<Page<UsuarioListaResponseDto>>filtrarUsuarios(@RequestParam(required = false)  String nombre, @RequestParam(required = false) String rol,@RequestParam(required = false)  Boolean activo,Pageable pageable) throws NotFoundException{
+
+        Page<UsuarioListaResponseDto>usuariosFiltrados=usuarioService.filtrarUsuarios(nombre,rol,activo,pageable);
+
+        return ResponseEntity.ok(usuariosFiltrados);
+    }
+
+
 
 }
