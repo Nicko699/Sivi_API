@@ -74,7 +74,7 @@ public class AccesTokenUtils {
 
         // Obtenemos la fecha y hora actual como momento de creación del token
         Instant fechaCreacion=Instant.now();
-        Instant fechaExpiracion=fechaCreacion.plus(Duration.ofMinutes(1));
+        Instant fechaExpiracion=fechaCreacion.plus(Duration.ofMinutes(30));
 
         //Creamos el Jwt token y retornamos
       return  Jwts.builder()

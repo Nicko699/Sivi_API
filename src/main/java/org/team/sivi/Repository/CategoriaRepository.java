@@ -6,5 +6,5 @@ import org.team.sivi.Model.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria,Long> {
-
+    boolean existsByNombre(String nombre); // Esto lo usa el Service
 }

@@ -92,9 +92,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception->exception.authenticationEntryPoint
                         (jwtAuthenticationEntryPoint).accessDeniedHandler(jwtAccesDeniedHandler))//Configuramos las excepciones, usuario no autenticado y usuario sin permisos
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Configuramos nuestro aplicacion a Stateles, Va  usar tokens
-                .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/iniciarSesion","/resetToken/recuperarContraseña","/resetToken/cambiarContraseña","/refreshToken/renovarToken").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/usuario/sinCredenciales").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/usuario/eliminarUsuario/{id}").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints
+                .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/iniciarSesion","/resetToken/recuperarContraseña","/resetToken/cambiarContraseña","/refreshToken/renovarToken",  "/categoria/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/iniciarSesion", "/resetToken/**", "/refreshToken/**", "/categoria/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuario/sinCredenciales", "/categoria/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/usuario/eliminarUsuario/{id}", "/categoria/**").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints, se agrega "categoria"
+
         //Le decimos a spring que ejecute nuestro filtro personalizado primero a cualquier otro que el tenga
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     //Retornamos la configuracion y construimos.
