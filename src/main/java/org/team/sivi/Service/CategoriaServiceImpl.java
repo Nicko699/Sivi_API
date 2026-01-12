@@ -1,8 +1,11 @@
 package org.team.sivi.Service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.sivi.Dto.CategoriaDto.CategoriaCrearRequestDto;
+import org.team.sivi.Dto.CategoriaDto.CategoriaEditarRequestDto;
 import org.team.sivi.Dto.CategoriaDto.CategoriaResponseDto;
 import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
@@ -32,6 +35,18 @@ public class CategoriaServiceImpl implements CategoriaService {
         Categoria categoria = categoriaMapper.requestDtoToCategoria(dto);
         return categoriaMapper.categoriaToResponseDto(categoriaRepository.save(categoria));
     }
+    
+    @Override
+    @Transactional
+    public CategoriaResponseDto editar(Long id, CategoriaEditarRequestDto dto) throws BadRequestException, NotFoundException {
+        Categoria categoria = categoriaRepository.findById(id)
+        		.orElseThrow(() -> new NotFoundException("La categoría no existe"));
+        categoria.setNombre(dto.nombre());
+        categoria.setDescripcion(dto.descripcion());
+        categoriaRepository.save(categoria);
+        return categoriaMapper.categoriaToResponseDto(categoria);
+    }
+
 
     @Override
     @Transactional
