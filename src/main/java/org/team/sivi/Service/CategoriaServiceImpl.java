@@ -26,7 +26,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
-    public CategoriaResponseDto crear(CategoriaCrearRequestDto dto) throws BadRequestException {
+    public CategoriaResponseDto crear(CategoriaCrearRequestDto dto) {
         // Regla 1: Nombre único
         if (categoriaRepository.existsByNombre(dto.nombre())) {
             throw new BadRequestException("Ya existe una categoría con el nombre: " + dto.nombre());
@@ -37,20 +37,19 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
     
     @Override
-    @Transactional
-    public CategoriaResponseDto editar(Long id, CategoriaEditarRequestDto dto) throws BadRequestException, NotFoundException {
+    @Transactional  
+    public CategoriaResponseDto editar(Long id, CategoriaEditarRequestDto dto) {
         Categoria categoria = categoriaRepository.findById(id)
-        		.orElseThrow(() -> new NotFoundException("La categoría no existe"));
+            .orElseThrow(() -> new NotFoundException("La categoría no existe"));
         categoria.setNombre(dto.nombre());
         categoria.setDescripcion(dto.descripcion());
         categoriaRepository.save(categoria);
         return categoriaMapper.categoriaToResponseDto(categoria);
     }
 
-
     @Override
     @Transactional
-    public void eliminar(Long id) throws NotFoundException, BadRequestException {
+    public void eliminar(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La categoría no existe"));
 
