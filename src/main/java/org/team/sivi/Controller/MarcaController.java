@@ -11,6 +11,7 @@ import org.team.sivi.Dto.MarcaDto.MarcaCrearRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaCrearResponseDto;
 import org.team.sivi.Dto.MarcaDto.MarcaEditarRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaListarResponseDto;
+import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Service.Marca.MarcaService;
 
@@ -52,18 +53,22 @@ public class MarcaController {
    @PutMapping("/editarMarca/{id}")
     public ResponseEntity<Void> editarMarca(@PathVariable  Long id, @Valid @RequestBody MarcaEditarRequestDto editarRequestDto)throws  NotFoundException{
 
-        marcaService.editarMarca(id,editarRequestDto);
+        try {
+            marcaService.editarMarca(id,editarRequestDto);
+        } catch (org.team.sivi.Exception.BadRequestException e) {
+            throw new RuntimeException(e);
+        }
 
         return ResponseEntity.noContent().build();
 
     }
 
    @DeleteMapping("/eliminarMarca/{id}")
-    public ResponseEntity<Void> eliminarMarca(@PathVariable Long id)throws NotFoundException{
+    public ResponseEntity<Void> eliminarMarca(@PathVariable Long id)throws NotFoundException, BadRequestException {
 
-        marcaService.eliminarMarca(id);
+           marcaService.eliminarMarca(id);
 
-        return ResponseEntity.noContent().build();
+       return ResponseEntity.noContent().build();
     }
 
 }

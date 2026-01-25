@@ -28,6 +28,7 @@ public class UsuarioSpecifications {
             return cb.equal(rolesJoin.get("nombre"), rol); // nombre = atributo en Rol
         };
     }
+
 }
 
 

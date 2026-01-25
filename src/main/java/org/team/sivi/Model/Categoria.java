@@ -1,11 +1,10 @@
 package org.team.sivi.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 public class Categoria {
    @Id
@@ -16,17 +15,21 @@ public class Categoria {
     private Boolean activo;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
-//Va a tener relacion con la tabla producto pero por ahora no tiene por que producto aún no existe
+
+   @OneToMany(mappedBy = "categoria")
+    private List<Producto>listaProductos;
+
     public Categoria() {
     }
 
-    public Categoria(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
+    public Categoria(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Producto> listaProductos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
         this.fechaCreacion = fechaCreacion;
         this.fechaActualizacion = fechaActualizacion;
+        this.listaProductos = listaProductos;
     }
 
     public Long getId() {
@@ -75,5 +78,13 @@ public class Categoria {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public List<Producto> getListaProductos() {
+        return listaProductos;
+    }
+
+    public void setListaProductos(List<Producto> listaProductos) {
+        this.listaProductos = listaProductos;
     }
 }

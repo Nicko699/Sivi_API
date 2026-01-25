@@ -89,7 +89,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setListaRol(listaRoles);
         //Guardamos la nueva cuenta del usuario en la bd
         usuarioRepository.save(usuario);
-        //Retornamos el usuario creado y mapeamos del usuario al dto de respuesta
+        //Retornamos el usuario creado y mapeamos del usuario al dto. de respuesta
         return usuarioMapper.usuarioToUsuarioCrearCuentaResponseDto(usuario);
     }
 
@@ -180,36 +180,27 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     @Override
     public void eliminarUsuario(Long id) throws NotFoundException, BadRequestException {
-        Optional<Usuario>usuario=usuarioRepository.findById(id);
 
-        if (usuario.isPresent()){
-            Usuario usuarioGet=usuario.get();
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("El usuario con ID " + id + " no existe o ya fue eliminado."));
 
-            boolean rolAdmin=false;
+        boolean esAdminActivo = usuario.getActivo() &&
+                usuario.getListaRol().stream()
+                        .anyMatch(r -> r.getNombre().equals("ROLE_ADMIN"));
 
-          for (Rol rol:usuarioGet.getListaRol() ){
+        if (esAdminActivo) {
 
-              if (rol.getNombre().equals("ROLE_ADMIN")){
-                  rolAdmin=true;
-                  break;
-              }
+            long adminsActivos = usuarioRepository.countByListaRol_NombreAndActivo("ROLE_ADMIN", true);
+
+            if (adminsActivos <= 1) {
+                throw new BadRequestException(
+                        "No es posible eliminar este usuario porque es el único administrador activo del sistema.");
             }
-
-            long cantidad=usuarioRepository.countByListaRol_Nombre("ROLE_ADMIN");
-
-            if (rolAdmin && cantidad<=1) {
-
-                throw new BadRequestException("No es posible eliminar este usuario porque es el único con rol de administrador en el sistema.");
-
-            }
-
-            usuarioRepository.deleteById(usuarioGet.getId());
-
-        } else {
-
-           throw new NotFoundException("El usuario con ID " + id + " no existe o ya fue eliminado.");
         }
+
+        usuarioRepository.delete(usuario);
     }
+
 
 
 }

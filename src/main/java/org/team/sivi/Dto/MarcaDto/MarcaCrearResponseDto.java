@@ -8,16 +8,18 @@ public class MarcaCrearResponseDto {
     private String descripcion;
     private Boolean activo;
     private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaActualizacion;
 
     public MarcaCrearResponseDto() {
     }
 
-    public MarcaCrearResponseDto(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion) {
+    public MarcaCrearResponseDto(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
         this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
     }
 
     public Long getId() {
@@ -58,5 +60,13 @@ public class MarcaCrearResponseDto {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
     }
 }

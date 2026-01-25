@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public class ResetTokenCambiarPasswordRequestDto {
 
-    @NotBlank(message = "El resetTokenI es obligatorio")
+    @NotBlank(message = "El resetToken es obligatorio")
     private String resetTokenId;
     @NotBlank(message = "El resetToken es obligatorio")
     private String resetToken;

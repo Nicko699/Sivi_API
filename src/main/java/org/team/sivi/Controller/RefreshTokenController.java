@@ -22,33 +22,10 @@ public class RefreshTokenController {
 
     //Endpoint de renovarToken
     @PostMapping("/renovarToken")
-    public ResponseEntity<RefreshTokenRenovarAccesTokenResponseDto> renovarToken(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @CookieValue(value = "refreshTokenId", required = false) String refreshTokenId,
-            @CookieValue(value = "refreshToken", required = false) String refreshToken
-    ) throws NotFoundException, UnauthorizedException {
-
-        //  DEBUG: Ver qué cookies llegan
-        Cookie[] cookies = request.getCookies();
-        System.out.println("=== COOKIES RECIBIDAS EN /renovarToken ===");
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                System.out.println("  ✅ " + cookie.getName() + " = " + cookie.getValue());
-            }
-        } else {
-            System.out.println("  ❌ NO HAY COOKIES EN LA REQUEST");
-        }
-
-        System.out.println("==========================================");
-
-        System.out.println("📋 @CookieValue refreshTokenId: " + refreshTokenId);
-        System.out.println("📋 @CookieValue refreshToken: " + refreshToken);
-        System.out.println("==========================================");
+    public ResponseEntity<RefreshTokenRenovarAccesTokenResponseDto> renovarToken(HttpServletResponse response, @CookieValue(value = "refreshTokenId", required = false) String refreshTokenId, @CookieValue(value = "refreshToken", required = false) String refreshToken) throws NotFoundException, UnauthorizedException {
 
         // Validación manual por si @CookieValue no funciona
         if (refreshTokenId == null || refreshToken == null) {
-            System.out.println("⚠️ Cookies faltantes, retornando error 400");
             return ResponseEntity.status(400).body(null);
         }
 

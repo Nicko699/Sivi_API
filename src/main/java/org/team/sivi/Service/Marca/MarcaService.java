@@ -6,6 +6,7 @@ import org.team.sivi.Dto.MarcaDto.MarcaCrearRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaCrearResponseDto;
 import org.team.sivi.Dto.MarcaDto.MarcaEditarRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaListarResponseDto;
+import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 
 public interface MarcaService {
@@ -14,8 +15,8 @@ public interface MarcaService {
 
     public Page<MarcaListarResponseDto>filtrarMarca(String nombre, Boolean activo, Pageable pageable) throws NotFoundException;
 
-    public void editarMarca(Long id, MarcaEditarRequestDto editarRequestDto)throws  NotFoundException;
+    public void editarMarca(Long id, MarcaEditarRequestDto editarRequestDto)throws  NotFoundException, BadRequestException;
 
-    public void eliminarMarca(Long id)throws NotFoundException;
+    public void eliminarMarca(Long id)throws NotFoundException, BadRequestException;
 
 }

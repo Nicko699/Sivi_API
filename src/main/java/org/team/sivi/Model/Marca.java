@@ -1,11 +1,10 @@
 package org.team.sivi.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 public class Marca {
    @Id
@@ -17,16 +16,20 @@ public class Marca {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
 
+    @OneToMany(mappedBy = "marca")
+    private List<Producto>listaProductos;
+
     public Marca() {
     }
 
-    public Marca(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
+    public Marca(Long id, String nombre, String descripcion, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Producto> listaProductos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
         this.fechaCreacion = fechaCreacion;
         this.fechaActualizacion = fechaActualizacion;
+        this.listaProductos = listaProductos;
     }
 
     public Long getId() {
@@ -75,5 +78,13 @@ public class Marca {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public List<Producto> getListaProductos() {
+        return listaProductos;
+    }
+
+    public void setListaProductos(List<Producto> listaProductos) {
+        this.listaProductos = listaProductos;
     }
 }
