@@ -9,6 +9,7 @@ import org.team.sivi.Dto.MarcaDto.MarcaCrearRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaCrearResponseDto;
 import org.team.sivi.Dto.MarcaDto.MarcaEditarRequestDto;
 import org.team.sivi.Dto.MarcaDto.MarcaListarResponseDto;
+import org.team.sivi.Exception.BadRequestException;
 import org.team.sivi.Exception.NotFoundException;
 import org.team.sivi.Mapper.MarcaMapper;
 import org.team.sivi.Model.Marca;
@@ -62,19 +63,23 @@ public class MarcaServiceImpl implements  MarcaService{
 
     @Transactional
     @Override
-    public void editarMarca(Long id, MarcaEditarRequestDto editarRequestDto) throws NotFoundException {
+    public void editarMarca(Long id, MarcaEditarRequestDto editarRequestDto) throws NotFoundException, BadRequestException {
 
         Optional<Marca>marca=marcaRepository.findById(id);
 
         if (marca.isPresent()){
             Marca marcaGet=marca.get();
 
-            marcaMapper.marcaEditarRequestDtoToMarca(editarRequestDto,marcaGet);
+            if (Boolean.TRUE.equals(marcaGet.getActivo()) && Boolean.FALSE.equals(editarRequestDto.getActivo()) && !marcaGet.getListaProductos().isEmpty()) {
 
-            marcaGet.setFechaActualizacion(LocalDateTime.now());
+                throw new BadRequestException("No se puede desactivar la marca por que aún tiene productos asociados a ella");
 
-            marcaRepository.save(marcaGet);
+            }
+                marcaMapper.marcaEditarRequestDtoToMarca(editarRequestDto, marcaGet);
 
+                marcaGet.setFechaActualizacion(LocalDateTime.now());
+
+                marcaRepository.save(marcaGet);
         }
         else {
             throw  new NotFoundException("No se ha encontrado la marca con el id:" +id);
@@ -84,11 +89,17 @@ public class MarcaServiceImpl implements  MarcaService{
 
     @Transactional
     @Override
-    public void eliminarMarca(Long id) throws NotFoundException {
+    public void eliminarMarca(Long id) throws NotFoundException, BadRequestException {
 
        Optional<Marca> marca=marcaRepository.findById(id);
 
        if (marca.isPresent()){
+           Marca marcaGet=marca.get();
+
+           if (marcaGet.getActivo() && !marcaGet.getListaProductos().isEmpty()){
+
+               throw new BadRequestException("No se puede eliminar la marca por que aún tiene productos asociados");
+           }
 
            marcaRepository.deleteById(id);
 

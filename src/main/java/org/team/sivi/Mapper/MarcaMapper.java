@@ -16,6 +16,7 @@ public interface MarcaMapper {
   Marca marcaCrearRequestDtoToMarca(MarcaCrearRequestDto marcaCrearRequestDto);
 
   MarcaCrearResponseDto marcaToMarcaCrearResponseDto(Marca marca);
+
  @Mapping(source = "fechaActualizacion", target = "fechaActualizacion")
   MarcaListarResponseDto marcaToMarcaListaResponseDto(Marca marca);
 

@@ -2,6 +2,7 @@ package org.team.sivi.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,6 +69,15 @@ public class ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mensajeError);
 
+    }
+
+//Excepcion de los Enum si viene con otro nombre desde el front o null
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Mensaje>httpMessageNotReadableException(HttpMessageNotReadableException exception){
+
+        Mensaje mensaje=new Mensaje(400,HttpStatus.BAD_REQUEST,exception.getMessage(),LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
     }
 
 

@@ -30,7 +30,7 @@ public class UsuarioController {
     // Creamos una nueva cuenta de usuario
     // Si sale bien devuelve el estado 201 (Created) y en el cuerpo de la respuesta los datos del usuario creado.
     // También en la cabecera dejamos la URL del nuevo usuario creado.
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("/crearCuenta")
     public ResponseEntity<UsuarioCrearCuentaResponseDto> crearCuenta(@Valid @RequestBody UsuarioCrearCuentaRequestDto crearCuentaRequestDto) throws BadRequestException, NotFoundException{
 
@@ -79,7 +79,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/editarUsuario/{id}")
-    public ResponseEntity<Void>editarUsuario(@PathVariable  Long id, @RequestBody UsuarioEditarRequestDto editarRequestDto) throws NotFoundException, BadRequestException{
+    public ResponseEntity<Void>editarUsuario(@PathVariable  Long id, @Valid @RequestBody UsuarioEditarRequestDto editarRequestDto) throws NotFoundException, BadRequestException{
 
         usuarioService.editarUsuario(id,editarRequestDto);
 
