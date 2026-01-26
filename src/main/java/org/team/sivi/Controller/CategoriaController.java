@@ -1,5 +1,6 @@
 package org.team.sivi.Controller;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class CategoriaController {
     // --- TAREA JULIANA: CREAR ---
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/crear")
-    public ResponseEntity<CategoriaResponseDto> crear(@RequestBody CategoriaCrearRequestDto dto) throws BadRequestException {
+    public ResponseEntity<CategoriaResponseDto> crear(@Valid @RequestBody CategoriaCrearRequestDto dto) throws BadRequestException {
 
         CategoriaResponseDto response = categoriaService.crearCategoria(dto);
 

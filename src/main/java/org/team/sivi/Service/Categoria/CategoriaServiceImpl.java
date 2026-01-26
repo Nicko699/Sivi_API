@@ -46,7 +46,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     // --- TAREA JULIANA: CREAR ---
     @Override
-    public CategoriaResponseDto crearCategoria(CategoriaCrearRequestDto dto) throws BadRequestException { // <--- SOLUCIÓN: Agregado throws
+    public CategoriaResponseDto crearCategoria(CategoriaCrearRequestDto dto) throws BadRequestException {
         if (categoriaRepository.existsByNombre(dto.getNombre())) {
             throw new BadRequestException("El nombre de la categoría '" + dto.getNombre() + "' ya existe.");
         }
@@ -60,7 +60,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     // --- TAREA JULIANA: ELIMINAR ---
     @Override
-    public void eliminarCategoria(Long id) throws NotFoundException, BadRequestException { // <--- SOLUCIÓN: Agregado throws
+    public void eliminarCategoria(Long id) throws NotFoundException, BadRequestException {
         if (!categoriaRepository.existsById(id)) {
             throw new NotFoundException("La categoría con ID " + id + " no existe.");
         }
