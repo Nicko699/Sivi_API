@@ -8,12 +8,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "productos")
 public class Producto {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String codigoBarras;
     private String nombre;
+
     private String descripcion;
     // Precio de venta: por unidad si tipoVenta=UNIDAD, por kg si tipoVenta=PESO
     private BigDecimal precioVenta;
