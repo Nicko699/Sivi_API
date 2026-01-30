@@ -1,10 +1,12 @@
 package org.team.sivi.Service.Categoria;
 
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.team.sivi.Dto.CategoriaDto.CategoriaCrearRequestDto;
+import org.team.sivi.Dto.CategoriaDto.CategoriaEditarRequestDto;
 import org.team.sivi.Dto.CategoriaDto.CategoriaListaResponseDto;
 import org.team.sivi.Dto.CategoriaDto.CategoriaResponseDto;
 import org.team.sivi.Exception.BadRequestException;
@@ -53,9 +55,31 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         Categoria entidad = categoriaMapper.categoriaCrearRequestDtoToCategoria(dto);
         entidad.setActivo(true);
+        entidad.setFechaCreacion(LocalDateTime.now());
+        entidad.setFechaActualizacion(LocalDateTime.now());
 
         Categoria guardado = categoriaRepository.save(entidad);
         return categoriaMapper.categoriaToCategoriaResponseDto(guardado);
+    }
+
+    // --- TAREA JEYMY: EDITAR  ---
+    @Override
+    public CategoriaResponseDto editar(Long id, CategoriaEditarRequestDto dto) throws NotFoundException, BadRequestException {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("La categoría no existe"));
+
+        // Validamos que el nuevo nombre no lo tenga otra categoría (tu mejora de hoy)
+        if (categoriaRepository.existsByNombreAndIdNot(dto.getNombre(), id)) {
+            throw new BadRequestException("El nombre '" + dto.getNombre() + "' ya pertenece a otra categoría.");
+        }
+
+        categoria.setNombre(dto.getNombre());
+        categoria.setDescripcion(dto.getDescripcion());
+        categoria.setActivo(dto.getActivo());
+        categoria.setFechaActualizacion(LocalDateTime.now());
+
+        Categoria guardada = categoriaRepository.save(categoria);
+        return categoriaMapper.categoriaToCategoriaResponseDto(guardada);
     }
 
     // --- TAREA JULIANA: ELIMINAR ---
