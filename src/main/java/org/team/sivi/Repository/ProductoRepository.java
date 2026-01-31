@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.team.sivi.Model.Producto;
 
-import java.util.List;
 
 @Repository
-public interface ProductoRepository extends JpaRepository<Producto,Long>, JpaSpecificationExecutor<Producto> {
+public interface ProductoRepository extends JpaRepository<Producto, Long>, JpaSpecificationExecutor<Producto> {
+    // Validación de eliminar
+    boolean existsByCategoriaId(Long id);
+
 
     Boolean existsByCodigoBarrasAndSoftDeleteFalse(String codigo);
 

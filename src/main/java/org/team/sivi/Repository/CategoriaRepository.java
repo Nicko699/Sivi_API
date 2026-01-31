@@ -9,4 +9,7 @@ import org.team.sivi.Model.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria,Long>, JpaSpecificationExecutor<Categoria> {
 
+    // Validar nombre único
+    boolean existsByNombre(String nombre);
+    boolean existsByNombreAndIdNot(String nombre, Long id);;
 }
