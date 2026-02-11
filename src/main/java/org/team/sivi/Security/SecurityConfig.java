@@ -92,9 +92,26 @@ public class SecurityConfig {
                 .exceptionHandling(exception->exception.authenticationEntryPoint
                         (jwtAuthenticationEntryPoint).accessDeniedHandler(jwtAccesDeniedHandler))//Configuramos las excepciones, usuario no autenticado y usuario sin permisos
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Configuramos nuestro aplicacion a Stateles, Va  usar tokens
-                .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/iniciarSesion","/resetToken/recuperarContraseña","/resetToken/cambiarContraseña","/refreshToken/renovarToken","/usuario/crearCuenta").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/usuario/sinCredenciales").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/usuario/eliminarUsuario/{id}").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints
+
+                .authorizeHttpRequests(authorize -> authorize
+                        // 1. Rutas de Usuario y Tokens (Aceptando con y sin /api)
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/usuario/iniciarSesion", "/usuario/iniciarSesion",
+                                "/api/resetToken/**", "/resetToken/**",
+                                "/api/refreshToken/**", "/refreshToken/**",
+                                "/api/usuario/crearCuenta", "/usuario/crearCuenta"
+                        ).permitAll()
+
+                        // 2. Rutas de consulta pública
+                        .requestMatchers(HttpMethod.GET, "/api/usuario/sinCredenciales", "/usuario/sinCredenciales").permitAll()
+
+                        // 3. Permite el acceso a los endpoints de reportes estadisticos
+                        .requestMatchers("/reportes/**").permitAll()
+
+
+                        .anyRequest().authenticated()
+                );
+
         //Le decimos a spring que ejecute nuestro filtro personalizado primero a cualquier otro que el tenga
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     //Retornamos la configuracion y construimos.
