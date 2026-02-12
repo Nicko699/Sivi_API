@@ -29,8 +29,7 @@ public class RefreshTokenController {
             return ResponseEntity.status(400).body(null);
         }
 
-        RefreshTokenRenovarAccesTokenResponseDto renovarAccesTokenResponseDto =
-                refreshTokenService.renovarToken(response, refreshTokenId, refreshToken);
+        RefreshTokenRenovarAccesTokenResponseDto renovarAccesTokenResponseDto = refreshTokenService.renovarToken(response, refreshTokenId, refreshToken);
 
         return ResponseEntity.ok().body(renovarAccesTokenResponseDto);
     }

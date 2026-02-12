@@ -235,5 +235,19 @@ public class ProductoServiceImpl implements ProductoService {
       return listaProductos.map(productoMapper::productoToLoteProductoListarResponseDto);
     }
 
+    //Metodo para filtrar los productos cuando se vendan en el punto de venta
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ProductoVentaListarResponseDto> filtrarProductosToVenta(String search, Pageable pageable) {
+
+        Specification<Producto>spec=Specification.allOf(ProductoSpecifications.noEliminados()
+                .and(ProductoSpecifications.soloActivos().and(ProductoSpecifications.likeNombreOCodigo(search))));
+
+        Page<Producto>listaProductos=productoRepository.findAll(spec,pageable);
+
+      return listaProductos.map(productoMapper::productoToProductoVentaListarResponseDto);
+
+    }
+
 
 }

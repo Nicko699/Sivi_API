@@ -23,4 +23,6 @@ public interface ProductoMapper {
 
     LoteProductoListarResponseDto productoToLoteProductoListarResponseDto(Producto producto);
 
+    ProductoVentaListarResponseDto productoToProductoVentaListarResponseDto(Producto producto);
+
 }
