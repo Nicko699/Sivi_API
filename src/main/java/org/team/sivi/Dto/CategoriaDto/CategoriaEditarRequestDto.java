@@ -1,21 +1,24 @@
-package org.team.sivi.Dto.MarcaDto;
+package org.team.sivi.Dto.CategoriaDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class MarcaEditarRequestDto {
-    @NotBlank(message = "El nombre es obligatorio")
+public class CategoriaEditarRequestDto {
+
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 3, max = 50)
     private String nombre;
-    @Size(max = 250,message = "La descripción debe de tener máximo 250 caracteres")
+    @Size(max = 255, message = "La descripción no puede superar los 255 caracteres")
     private String descripcion;
-    @NotNull(message = "Activo no puede ser null")
+
+    @NotNull(message = "El estado es obligatorio")
     private Boolean activo;
 
-    public MarcaEditarRequestDto() {
+    public CategoriaEditarRequestDto() {
     }
 
-    public MarcaEditarRequestDto(String nombre, String descripcion, Boolean activo) {
+    public CategoriaEditarRequestDto(String nombre, String descripcion, Boolean activo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;

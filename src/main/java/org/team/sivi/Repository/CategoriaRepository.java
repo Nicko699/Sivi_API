@@ -9,4 +9,5 @@ import org.team.sivi.Model.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria,Long>, JpaSpecificationExecutor<Categoria> {
 
+    boolean existsByNombreIgnoreCase(String nombre);
 }
