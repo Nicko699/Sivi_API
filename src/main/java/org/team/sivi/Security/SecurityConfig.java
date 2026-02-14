@@ -61,7 +61,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 
         // Métodos HTTP permitidos
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"));
 
         // Permitir todos los headers
         configuration.setAllowedHeaders(List.of("*"));
@@ -94,7 +94,7 @@ public class SecurityConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Configuramos nuestro aplicacion a Stateles, Va  usar tokens
                 .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.POST,"/usuario/iniciarSesion","/resetToken/recuperarContraseña","/resetToken/cambiarContraseña","/refreshToken/renovarToken","/usuario/crearCuenta").permitAll()
                         .requestMatchers(HttpMethod.GET,"/usuario/sinCredenciales").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/usuario/eliminarUsuario/{id}").permitAll().anyRequest().authenticated());//Configuramos las rutas de los endpoints
+                        .requestMatchers(HttpMethod.DELETE,"/usuario/eliminarUsuario/{id}").permitAll().requestMatchers("/reportes/**").permitAll(). anyRequest().authenticated());//Configuramos las rutas de los endpoints
         //Le decimos a spring que ejecute nuestro filtro personalizado primero a cualquier otro que el tenga
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     //Retornamos la configuracion y construimos.

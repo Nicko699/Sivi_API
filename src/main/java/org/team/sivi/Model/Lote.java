@@ -20,10 +20,13 @@ public class Lote {
     @ManyToOne
     private Producto producto;
 
+    @ManyToMany(mappedBy = "listaLotes")
+    private List<DetalleVenta>listaDetallesVenta;
+
     public Lote() {
     }
 
-    public Lote(Long id, String codigoLote, BigDecimal precioCompraUnitario, BigDecimal cantidadInicial, BigDecimal cantidadActual, LocalDateTime fechaCompra, Boolean softDelete, Boolean agotado, Producto producto) {
+    public Lote(Long id, String codigoLote, BigDecimal precioCompraUnitario, BigDecimal cantidadInicial, BigDecimal cantidadActual, LocalDateTime fechaCompra, Boolean softDelete, Boolean agotado, Producto producto, List<DetalleVenta> listaDetallesVenta) {
         this.id = id;
         this.codigoLote = codigoLote;
         this.precioCompraUnitario = precioCompraUnitario;
@@ -33,6 +36,7 @@ public class Lote {
         this.softDelete = softDelete;
         this.agotado = agotado;
         this.producto = producto;
+        this.listaDetallesVenta = listaDetallesVenta;
     }
 
     public Long getId() {
@@ -105,5 +109,13 @@ public class Lote {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+
+    public List<DetalleVenta> getListaDetallesVenta() {
+        return listaDetallesVenta;
+    }
+
+    public void setListaDetallesVenta(List<DetalleVenta> listaDetallesVenta) {
+        this.listaDetallesVenta = listaDetallesVenta;
     }
 }

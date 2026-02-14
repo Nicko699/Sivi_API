@@ -96,4 +96,14 @@ public class ProductoController {
 
         return ResponseEntity.ok(loteProductoListarResponseDto);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','VEND')")
+    @GetMapping("/filtrarProductosToVenta")
+    public ResponseEntity<Page<ProductoVentaListarResponseDto>> filtrarProductosToVenta(@RequestParam(required = false)  String search, Pageable pageable) {
+
+        Page<ProductoVentaListarResponseDto>productoVentaListarResponseDto=productoService.filtrarProductosToVenta(search,pageable);
+
+        return ResponseEntity.ok(productoVentaListarResponseDto);
+    }
+
 }

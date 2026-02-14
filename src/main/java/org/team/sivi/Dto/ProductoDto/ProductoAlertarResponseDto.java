@@ -13,7 +13,7 @@ public class ProductoAlertarResponseDto {
     private BigDecimal stockTotal;
     private BigDecimal stockMinimoAlerta;
     private Boolean bajoStock;
-    private ProductoTipoVenta tipoVenta;;
+    private ProductoTipoVenta tipoVenta;
 
     public ProductoAlertarResponseDto() {
     }

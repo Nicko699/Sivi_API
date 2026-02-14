@@ -38,7 +38,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     @Override
     public void recuperarPassword(ResetTokenRecuperarPasswordRequestDto recuperarPasswordRequestDto) throws BadRequestException {
 
-        Optional<Usuario>usuario=usuarioRepository.findUsuarioByCorreo(recuperarPasswordRequestDto.getCorreo());
+        Optional<Usuario>usuario=usuarioRepository.findUsuarioByCorreoAndSoftDeleteFalse(recuperarPasswordRequestDto.getCorreo());
 
         if (usuario.isPresent()){
 

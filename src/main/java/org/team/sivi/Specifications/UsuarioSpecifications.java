@@ -2,6 +2,7 @@ package org.team.sivi.Specifications;
 
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
+import org.team.sivi.Model.Producto;
 import org.team.sivi.Model.Rol;
 import org.team.sivi.Model.Usuario;
 
@@ -27,6 +28,11 @@ public class UsuarioSpecifications {
             Join<Usuario, Rol> rolesJoin = root.join("listaRol"); // roles = campo en Usuario
             return cb.equal(rolesJoin.get("nombre"), rol); // nombre = atributo en Rol
         };
+    }
+
+    //  Trae productos no eliminados
+    public static Specification<Usuario> noEliminados() {
+        return (root, query, cb) -> cb.equal(root.get("softDelete"), false);
     }
 
 }

@@ -40,10 +40,15 @@ public class Producto {
     @OneToMany(mappedBy = "producto",cascade = CascadeType.ALL)
     private List<Lote>listaLotes;
 
+    @OneToMany(mappedBy = "producto")
+    private List<DetalleVenta>listaDetallesVenta;
+
+
+
     public Producto() {
     }
 
-    public Producto(Long id, String codigoBarras, String nombre, String descripcion, BigDecimal precioVenta, BigDecimal stockTotal, BigDecimal stockMinimoAlerta, Boolean bajoStock, Boolean activo, Boolean softDelete, ProductoTipoVenta tipoVenta, ProductoUnidadBase unidadBase, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, Categoria categoria, Marca marca, List<Lote> listaLotes) {
+    public Producto(Long id, String codigoBarras, String nombre, String descripcion, BigDecimal precioVenta, BigDecimal stockTotal, BigDecimal stockMinimoAlerta, Boolean bajoStock, Boolean activo, Boolean softDelete, ProductoTipoVenta tipoVenta, ProductoUnidadBase unidadBase, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, Categoria categoria, Marca marca, List<Lote> listaLotes, List<DetalleVenta> listaDetallesVenta) {
         this.id = id;
         this.codigoBarras = codigoBarras;
         this.nombre = nombre;
@@ -61,6 +66,7 @@ public class Producto {
         this.categoria = categoria;
         this.marca = marca;
         this.listaLotes = listaLotes;
+        this.listaDetallesVenta = listaDetallesVenta;
     }
 
     public Long getId() {
@@ -197,5 +203,13 @@ public class Producto {
 
     public void setListaLotes(List<Lote> listaLotes) {
         this.listaLotes = listaLotes;
+    }
+
+    public List<DetalleVenta> getListaDetallesVenta() {
+        return listaDetallesVenta;
+    }
+
+    public void setListaDetallesVenta(List<DetalleVenta> listaDetallesVenta) {
+        this.listaDetallesVenta = listaDetallesVenta;
     }
 }

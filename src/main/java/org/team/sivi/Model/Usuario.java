@@ -18,6 +18,7 @@ public class Usuario {
     private String correo;
     private String password;
     private Boolean activo;
+    private Boolean softDelete;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
     //Indicamos que Usuario va a tener una relacion N a N con Rol
@@ -34,22 +35,26 @@ public class Usuario {
     //Relacion 1 a 1 con resetToken
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private ResetToken resetToken;
+   //Relacion 1 a N con venta
+    @OneToMany(mappedBy = "usuario")
+    private List<Venta>listaVentas;
 
-    //Creamos el constructor vacío
     public Usuario() {
     }
 
-    public Usuario(Long id, String nombre, String correo, String password, Boolean activo, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Rol> listaRol, List<RefreshToken> listaRefreshTokens, ResetToken resetToken) {
+    public Usuario(Long id, String nombre, String correo, String password, Boolean activo, Boolean softDelete, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, List<Rol> listaRol, List<RefreshToken> listaRefreshTokens, ResetToken resetToken, List<Venta> listaVentas) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
         this.password = password;
         this.activo = activo;
+        this.softDelete = softDelete;
         this.fechaCreacion = fechaCreacion;
         this.fechaActualizacion = fechaActualizacion;
         this.listaRol = listaRol;
         this.listaRefreshTokens = listaRefreshTokens;
         this.resetToken = resetToken;
+        this.listaVentas = listaVentas;
     }
 
     public Long getId() {
@@ -92,6 +97,14 @@ public class Usuario {
         this.activo = activo;
     }
 
+    public Boolean getSoftDelete() {
+        return softDelete;
+    }
+
+    public void setSoftDelete(Boolean softDelete) {
+        this.softDelete = softDelete;
+    }
+
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
@@ -130,5 +143,13 @@ public class Usuario {
 
     public void setResetToken(ResetToken resetToken) {
         this.resetToken = resetToken;
+    }
+
+    public List<Venta> getListaVentas() {
+        return listaVentas;
+    }
+
+    public void setListaVentas(List<Venta> listaVentas) {
+        this.listaVentas = listaVentas;
     }
 }

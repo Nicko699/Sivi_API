@@ -33,7 +33,7 @@ public class RefreshTokenUtils {
     @Transactional
     public RefreshTokenResponseDto crearRefreshToken(String correo) throws NotFoundException {
         //Encontramos al usuario en la bd por el correo
-        Optional<Usuario>usuario=usuarioRepository.findUsuarioByCorreo(correo);
+        Optional<Usuario>usuario=usuarioRepository.findUsuarioByCorreoAndSoftDeleteFalse(correo);
       //Comprobamos si existe en la bd
         if (usuario.isPresent()){
             Usuario usuarioGet=usuario.get();

@@ -1,0 +1,67 @@
+package org.team.sivi.Service.Reporte;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.team.sivi.Dto.ReporteDto.TotalVentasResponseDto;
+import org.team.sivi.Repository.VentaRepository;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Service
+public class ReporteServiceImpl implements ReporteService {
+
+    private final VentaRepository ventaRepository;
+
+    public ReporteServiceImpl(VentaRepository ventaRepository) {
+        this.ventaRepository = ventaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public TotalVentasResponseDto obtenerTotalVentasHoy() {
+
+        TotalVentasResponseDto ventasResponseDto=ventaRepository.obtenerResumenVentasHoy();
+
+
+        if (ventasResponseDto==null){
+            ventasResponseDto=new TotalVentasResponseDto(BigDecimal.ZERO, BigDecimal.ZERO, 0L);
+        }
+
+        if (ventasResponseDto.getTotalVendido() == null) {
+            ventasResponseDto.setTotalVendido(BigDecimal.ZERO);
+        }
+        if (ventasResponseDto.getCantidadVentas() == null) {
+            ventasResponseDto.setCantidadVentas(0L);
+        }
+
+        return ventasResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public TotalVentasResponseDto obtenerVentasPorRango(LocalDate inicio, LocalDate fin) {
+
+
+        TotalVentasResponseDto ventasResponseDto=ventaRepository.sumarVentasEntreFechas(inicio.atStartOfDay(), fin.atTime(23,59,59));
+
+        if (ventasResponseDto==null){
+
+            ventasResponseDto = new TotalVentasResponseDto(BigDecimal.ZERO, BigDecimal.ZERO, 0L);
+        }
+
+        if (ventasResponseDto.getTotalVendido() == null) {
+            ventasResponseDto.setTotalVendido(BigDecimal.ZERO);
+        }
+
+        if (ventasResponseDto.getTotalGanancia() == null) {
+            ventasResponseDto.setTotalGanancia(BigDecimal.ZERO);
+        }
+
+        if (ventasResponseDto.getCantidadVentas() == null) {
+            ventasResponseDto.setCantidadVentas(0L);
+        }
+
+        return ventasResponseDto;
+    }
+}

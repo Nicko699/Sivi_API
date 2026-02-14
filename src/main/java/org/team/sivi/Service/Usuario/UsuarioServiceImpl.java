@@ -2,7 +2,6 @@ package org.team.sivi.Service.Usuario;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +59,7 @@ public class UsuarioServiceImpl implements UsuarioService {
        //Mapeamos los datos ingresados por el usuario
         Usuario usuario=usuarioMapper.usuarioCrearCuentaRequestDtoToUsuario(crearCuentaRequestDto);
       //Verificamos que el correo que ingresó no tenga una cuenta en el sistema
-        if (usuarioRepository.existsUsuarioByCorreo(usuario.getCorreo())){
+        if (usuarioRepository.existsUsuarioByCorreoAndSoftDeleteFalse(usuario.getCorreo())){
             throw new BadRequestException("El correo " + usuario.getCorreo() + " ya está registrado. Intente con otro correo electrónico.");
         }
           //Inicializamos una lista de roles
@@ -85,7 +84,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         //setteamos algunos datos del usuario que no fueron mappeados o la contraseña que necesitaba encriptación
         usuario.setPassword(passwordEncript);
         usuario.setActivo(true);
+        usuario.setSoftDelete(false);
         usuario.setFechaCreacion(LocalDateTime.now());
+        usuario.setFechaActualizacion(usuario.getFechaCreacion());
         usuario.setListaRol(listaRoles);
         //Guardamos la nueva cuenta del usuario en la bd
         usuarioRepository.save(usuario);
@@ -116,9 +117,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Page<UsuarioListaResponseDto> filtrarUsuarios(String nombre, String rol, Boolean activo, Pageable pageable) throws NotFoundException {
 
-        Specification<Usuario>spec=Specification.allOf(UsuarioSpecifications.nombreLike(nombre))
+        Specification<Usuario>spec=Specification.allOf(UsuarioSpecifications.noEliminados().and(UsuarioSpecifications.nombreLike(nombre))
                 .and(UsuarioSpecifications.rolEqual(rol))
-                .and(UsuarioSpecifications.activoEqual(activo));
+                .and(UsuarioSpecifications.activoEqual(activo)));
 
         Page<Usuario>usuariosFiltrados=usuarioRepository.findAll(spec,pageable);
 
@@ -134,7 +135,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void editarUsuario(Long id, UsuarioEditarRequestDto editarRequestDto) throws NotFoundException, BadRequestException {
 
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        Optional<Usuario> usuario = usuarioRepository.findByIdAndSoftDeleteFalse(id);
 
         if (usuario.isPresent()) {
 
@@ -152,7 +153,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             // Solo bloquear edición si es ADMIN y último admin activo
             if (rolAdmin) {
-                long cantidadAdminActivos = usuarioRepository.countByListaRol_NombreAndActivo("ROLE_ADMIN",true);
+                long cantidadAdminActivos = usuarioRepository.countByListaRol_NombreAndActivoAndSoftDeleteFalse("ROLE_ADMIN",true);
                 boolean adminRol= false;
                 for (Rol rol:editarRequestDto.getListaRol()){
                     if (rol.getNombre().equalsIgnoreCase("ROLE_ADMIN")){
@@ -181,7 +182,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void eliminarUsuario(Long id) throws NotFoundException, BadRequestException {
 
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() ->
+        Usuario usuario = usuarioRepository.findByIdAndSoftDeleteFalse(id).orElseThrow(() ->
                 new NotFoundException("El usuario con ID " + id + " no existe o ya fue eliminado."));
 
         boolean esAdminActivo = usuario.getActivo() &&
@@ -190,7 +191,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (esAdminActivo) {
 
-            long adminsActivos = usuarioRepository.countByListaRol_NombreAndActivo("ROLE_ADMIN", true);
+            long adminsActivos = usuarioRepository.countByListaRol_NombreAndActivoAndSoftDeleteFalse("ROLE_ADMIN", true);
 
             if (adminsActivos <= 1) {
                 throw new BadRequestException(
@@ -198,7 +199,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             }
         }
 
-        usuarioRepository.delete(usuario);
+        usuario.setSoftDelete(true);
+
+        usuarioRepository.save(usuario);
+
     }
 
 

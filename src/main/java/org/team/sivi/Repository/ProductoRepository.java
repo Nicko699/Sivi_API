@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.team.sivi.Model.Producto;
 
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long>, JpaSpecificationExecutor<Producto> {
@@ -14,5 +16,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long>, JpaSp
 
 
     Boolean existsByCodigoBarrasAndSoftDeleteFalse(String codigo);
+
+   List<Producto> findAllByCodigoBarrasInAndSoftDeleteFalse( List<String> codigo);
 
 }

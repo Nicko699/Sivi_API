@@ -24,4 +24,6 @@ public interface ProductoService {
     public Page<ProductoAlertarResponseDto>alertarProductoBajoStock(String search, Pageable pageable) throws NotFoundException;
 
     public Page<LoteProductoListarResponseDto>filtrarProductosLotes(String search,Pageable pageable);
+
+    public  Page<ProductoVentaListarResponseDto>filtrarProductosToVenta(String search,Pageable pageable);
 }
