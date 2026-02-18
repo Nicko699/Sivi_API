@@ -14,6 +14,6 @@ public interface LoteRepository extends JpaRepository<Lote,Long>, JpaSpecificati
 
     List<Lote> findByProductoAndAgotadoFalse(Producto producto);
 
-    List<Lote>findByAgotadoFalseOrderByFechaCompraDesc();
+    List<Lote> findByProducto_CodigoBarrasAndAgotadoFalseOrderByFechaCompraDesc(String codigoBarras);
 
 }

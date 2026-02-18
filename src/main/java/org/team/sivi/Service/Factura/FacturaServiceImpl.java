@@ -38,7 +38,7 @@ public class FacturaServiceImpl implements FacturaService {
                 .orElseThrow(()->new NotFoundException("No se ha encontrado la venta en el sistema"));
 
         // cargamos el archivo .jasper desde resources
-        InputStream  archivoJasper = getClass().getResourceAsStream("/reportes/Ticket19.jasper");
+        InputStream  archivoJasper = getClass().getResourceAsStream("/reportes/Ticket20.jasper");
 
         JasperReport jasperReport = (JasperReport) JRLoader.loadObject(archivoJasper);
 

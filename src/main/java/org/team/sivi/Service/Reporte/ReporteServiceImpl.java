@@ -2,6 +2,7 @@ package org.team.sivi.Service.Reporte;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.sivi.Dto.ReporteDto.TotalGananciasResponseDto;
 import org.team.sivi.Dto.ReporteDto.TotalVentasResponseDto;
 import org.team.sivi.Repository.VentaRepository;
 
@@ -58,5 +59,51 @@ public class ReporteServiceImpl implements ReporteService {
         }
 
         return ventasResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public TotalGananciasResponseDto obtenerTotalGananciasHoy() {
+
+        TotalGananciasResponseDto gananciasResponseDto = ventaRepository.obtenerResumenGananciasHoy();
+
+        if (gananciasResponseDto == null) {
+
+            gananciasResponseDto = new TotalGananciasResponseDto(BigDecimal.ZERO, 0L);
+
+        }
+
+        if (gananciasResponseDto.getTotalGanancia() == null) {
+            gananciasResponseDto.setTotalGanancia(BigDecimal.ZERO);
+        }
+
+        if (gananciasResponseDto.getCantidadVentas() == null) {
+            gananciasResponseDto.setCantidadVentas(0L);
+        }
+
+        return gananciasResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public TotalGananciasResponseDto obtenerGananciasPorRango(LocalDate inicio, LocalDate fin) {
+
+        TotalGananciasResponseDto gananciasResponseDto=ventaRepository.sumarGananciasEntreFechas(inicio.atStartOfDay(),fin.atTime(23,59,59));
+
+        if (gananciasResponseDto == null) {
+
+            gananciasResponseDto = new TotalGananciasResponseDto(BigDecimal.ZERO, 0L);
+
+        }
+
+        if (gananciasResponseDto.getTotalGanancia() == null) {
+            gananciasResponseDto.setTotalGanancia(BigDecimal.ZERO);
+        }
+
+        if (gananciasResponseDto.getCantidadVentas() == null) {
+            gananciasResponseDto.setCantidadVentas(0L);
+        }
+
+        return gananciasResponseDto;
     }
 }

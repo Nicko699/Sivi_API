@@ -1,10 +1,9 @@
 package org.team.sivi.Specifications;
 
 import org.springframework.data.jpa.domain.Specification;
-import org.team.sivi.Model.Usuario;
 import org.team.sivi.Model.Venta;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 public class VentaSpecifications {
 

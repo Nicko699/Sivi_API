@@ -48,77 +48,65 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public VentaCrearResponseDto crearVenta(VentaCrearRequestDto ventaCrearRequestDto) throws NotFoundException, BadRequestException {
 
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String correo = authentication.getName();
 
-        String correo=authentication.getName();
+        // Encontramos el usuario que esta realizando la venta en la bd por correo
+        // y si no lo encuentra, lanzamos una excepcion
+        Usuario usuarioEncontrado = usuarioRepository.findUsuarioByCorreoAndSoftDeleteFalse(correo)
+                .orElseThrow(() -> new NotFoundException("El usuario no se encuentra registrado en el sistema"));
 
-        //Encontramos el usuario que esta realizando la venta en la bd por correo
-        //y si no lo encuentra, lanzamos una excepcion
-        Usuario usuarioEncontrado=usuarioRepository.findUsuarioByCorreoAndSoftDeleteFalse(correo)
-                .orElseThrow(()->new NotFoundException("El usuario no se encuentra registrado en el sistema"));
+        List<String> listaCodigoBarras = new ArrayList<>();
 
-        List<String>listaCodigoBarras=new ArrayList<>();
-
-       //Recorremos los detalles de venta que vienen del dto y obtenemos su codigo de barras
-        //y lo guardamos en una lista
-        for (DetalleVentaCrearRequestDto detalleVenta:ventaCrearRequestDto.getListaDetalleVenta()){
-
-            String codigoBarra=detalleVenta.getCodigoBarrasProducto();
-
+        // Recorremos los detalles de venta que vienen del dto y obtenemos su codigo de barras
+        // y lo guardamos en una lista
+        for (DetalleVentaCrearRequestDto detalleVenta : ventaCrearRequestDto.getListaDetalleVenta()) {
+            String codigoBarra = detalleVenta.getCodigoBarrasProducto();
             listaCodigoBarras.add(codigoBarra);
         }
-        //buscamos en la bd todos los productos seleccionados para venderse
-        List<Producto>listaProductos=productoRepository.findAllByCodigoBarrasInAndSoftDeleteFalse(listaCodigoBarras);
 
-        Map<String,Producto>productoMap=new HashMap<>();
+        // Buscamos en la bd todos los productos seleccionados para venderse
+        List<Producto> listaProductos = productoRepository.findAllByCodigoBarrasInAndSoftDeleteFalse(listaCodigoBarras);
+        Map<String, Producto> productoMap = new HashMap<>();
 
-       //Asignamos los productos encontrados de la bd a un map con clave, valor
-        for (Producto producto:listaProductos){
-
-            productoMap.put(producto.getCodigoBarras(),producto);
-
+        // Asignamos los productos encontrados de la bd a un map con clave, valor
+        for (Producto producto : listaProductos) {
+            productoMap.put(producto.getCodigoBarras(), producto);
         }
 
-        Venta venta=new Venta();
+        Venta venta = new Venta();
+        List<DetalleVenta> listaDetalles = new ArrayList<>();
 
-        List<DetalleVenta>listaDetalles=new ArrayList<>();
-
-        BigDecimal totalCosto=BigDecimal.ZERO;
+        BigDecimal totalCosto = BigDecimal.ZERO;
         BigDecimal subTotal;
         BigDecimal total = BigDecimal.ZERO;
         BigDecimal nuevaCantidadProducto;
-       //De nuevo recorremos los detalles de venta y comparamos el codigo de barras con el del map,
-        //que son lo de los productos de la bd
-        for (DetalleVentaCrearRequestDto detalleVentaDto :ventaCrearRequestDto.getListaDetalleVenta()){
 
-            Producto producto=productoMap.get(detalleVentaDto.getCodigoBarrasProducto());
+        // Recorremos los detalles de venta y comparamos el codigo de barras con el del map
+        for (DetalleVentaCrearRequestDto detalleVentaDto : ventaCrearRequestDto.getListaDetalleVenta()) {
 
-           //Si el producto es null, lanzamos la excepcion
-            if (producto==null) {
+            Producto producto = productoMap.get(detalleVentaDto.getCodigoBarrasProducto());
 
-                throw new NotFoundException("Producto no encontrado con el código de barras:"+detalleVentaDto.getCodigoBarrasProducto());
+            // Si el producto es null, lanzamos la excepcion
+            if (producto == null) {
+                throw new NotFoundException("Producto no encontrado con el código de barras:" + detalleVentaDto.getCodigoBarrasProducto());
             }
-           //Si el stock actual del producto es menor a la cantidad que se va a comprar ,lanzamos una excepcion de stock insuficiente
-            if (producto.getStockTotal().compareTo(detalleVentaDto.getCantidad())<0){
 
+            // Si el stock actual del producto es menor a la cantidad que se va a comprar, lanzamos una excepcion
+            if (producto.getStockTotal().compareTo(detalleVentaDto.getCantidad()) < 0) {
                 throw new BadRequestException("Stock insuficiente para realizar la venta");
             }
 
-            //Realizamos operaciones precio venta*cantidad de compra
-            subTotal=producto.getPrecioVenta().multiply(detalleVentaDto.getCantidad());
-            //asignamos todos los subtotales al total de la venta
-            total=total.add(subTotal);
-            //Calculamos la nueva cantidad total del producto
-            nuevaCantidadProducto=producto.getStockTotal().subtract(detalleVentaDto.getCantidad());
+            // Precio venta * cantidad
+            subTotal = producto.getPrecioVenta().multiply(detalleVentaDto.getCantidad());
+            total = total.add(subTotal); // acumulamos total de venta
+            nuevaCantidadProducto = producto.getStockTotal().subtract(detalleVentaDto.getCantidad());
 
+            // Descontamos lotes
+            ResultadoLoteVentaResponseDto lotesUsadosToVender = descontarStockLote.descontarStockLotes(detalleVentaDto.getCantidad(),producto.getCodigoBarras());
+            totalCosto = totalCosto.add(lotesUsadosToVender.getCostoTotal());
 
-            //Llamamos al metodo descontar lote y le pasamos la cantidad a vender
-             ResultadoLoteVentaResponseDto lotesUsadosToVender=descontarStockLote.descontarStockLotes(detalleVentaDto.getCantidad());
-
-             totalCosto=totalCosto.add(lotesUsadosToVender.getCostoTotal());
-
-            DetalleVenta detalleVenta=new DetalleVenta();
-
+            DetalleVenta detalleVenta = new DetalleVenta();
             detalleVenta.setCodigoBarras(producto.getCodigoBarras());
             detalleVenta.setNombreProducto(producto.getNombre());
             detalleVenta.setCantidad(detalleVentaDto.getCantidad());
@@ -133,37 +121,31 @@ public class VentaServiceImpl implements VentaService {
             detalleVenta.setVenta(venta);
 
             producto.setStockTotal(nuevaCantidadProducto);
-            //Si el stock total es menor al stock minimo alerta, marcamos como stock bajo
-            if (producto.getStockTotal().compareTo(producto.getStockMinimoAlerta())<=0){
+            if (producto.getStockTotal().compareTo(producto.getStockMinimoAlerta()) <= 0) {
                 producto.setBajoStock(true);
             }
 
             listaDetalles.add(detalleVenta);
-
-            }
-
-
-        //Creamos el codigo para venta
-        String codigoVenta="VNT-" + UUID.randomUUID().toString().substring(0,8).toUpperCase();
-     //Si el descuento total es mayor a 0, calculamos el descuento
-        if (ventaCrearRequestDto.getDescuentoTotal().compareTo(BigDecimal.ZERO)>0) {
-            total = total.multiply(BigDecimal.ONE.subtract(ventaCrearRequestDto.getDescuentoTotal()
-                    .divide(new BigDecimal("100"), 2, RoundingMode.UP))).setScale(2, RoundingMode.UP);
         }
 
-        StringJoiner joiner=new StringJoiner(",");
-       //Recorremos los roles y lo asignamos a un solo string
-        for (Rol rol:usuarioEncontrado.getListaRol()){
+        // Creamos el codigo para venta
+        String codigoVenta = "VNT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-          joiner.add(rol.getNombre());
-
+        // Aplicamos descuento si existe
+        if (ventaCrearRequestDto.getDescuentoTotal().compareTo(BigDecimal.ZERO) > 0) {
+            total = total.multiply(BigDecimal.ONE.subtract(
+                    ventaCrearRequestDto.getDescuentoTotal().divide(new BigDecimal("100"), 2, RoundingMode.UP)
+            )).setScale(2, RoundingMode.UP);
         }
 
-            String roles=joiner.toString();
+        StringJoiner joiner = new StringJoiner(",");
+        for (Rol rol : usuarioEncontrado.getListaRol()) {
+            joiner.add(rol.getNombre());
+        }
+        String roles = joiner.toString();
 
-        BigDecimal totalGanancia=BigDecimal.ZERO;
-
-        totalGanancia=totalGanancia.add(total.subtract(totalCosto));
+        // Calculamos la ganancia correctamente
+        BigDecimal totalGanancia = total.subtract(totalCosto).setScale(2, RoundingMode.UP);
 
         venta.setCodigoVenta(codigoVenta);
         venta.setMontoTotal(total);
@@ -180,9 +162,9 @@ public class VentaServiceImpl implements VentaService {
         venta.setFechaVenta(LocalDateTime.now());
         venta.setUsuario(usuarioEncontrado);
 
-
         return ventaMapper.ventaToVentaCrearResponseDto(ventaRepository.save(venta));
     }
+
 
     @Transactional(readOnly = true)
     @Override

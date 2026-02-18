@@ -21,10 +21,10 @@ private final LoteRepository loteRepository;
     }
 
     @Transactional
-    public ResultadoLoteVentaResponseDto descontarStockLotes(BigDecimal cantidadVender) throws NotFoundException {
+    public ResultadoLoteVentaResponseDto descontarStockLotes(BigDecimal cantidadVender,String codigoBarras) throws NotFoundException {
 
         //lotes restar stock
-        List<Lote> listaLotes = loteRepository.findByAgotadoFalseOrderByFechaCompraDesc();
+        List<Lote> listaLotes = loteRepository.findByProducto_CodigoBarrasAndAgotadoFalseOrderByFechaCompraDesc(codigoBarras);
 
         if (listaLotes.isEmpty()) {
             throw new NotFoundException("No hay lotes disponibles");
@@ -66,6 +66,7 @@ private final LoteRepository loteRepository;
             //setteamos la cantidad del lote a 0
             //y lo marcamos como agotado
             else {
+                subTotalCosto = subTotalCosto.add(lote.getPrecioCompraUnitario().multiply(stockLote));
                 cantidadVender = cantidadVender.subtract(stockLote);
                 lote.setCantidadActual(BigDecimal.ZERO);
                 lote.setAgotado(true);

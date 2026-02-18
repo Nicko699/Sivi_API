@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.team.sivi.Dto.ReporteDto.TotalGananciasResponseDto;
 import org.team.sivi.Dto.ReporteDto.TotalVentasResponseDto;
 import org.team.sivi.Service.Reporte.ReporteService;
 
@@ -41,6 +42,30 @@ public class ReporteController {
         TotalVentasResponseDto ventasResponseDto=reporteService.obtenerVentasPorRango(inicio,fin);
 
         return ResponseEntity.ok(ventasResponseDto);
+
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/obtenerTotalGananciasDia")
+    public ResponseEntity<TotalGananciasResponseDto> obtenerTotalGananciasHoy(){
+
+        TotalGananciasResponseDto gananciasResponseDto=reporteService.obtenerTotalGananciasHoy();
+
+        return ResponseEntity.ok(gananciasResponseDto);
+
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/obtenerTotalGananciasFecha")
+    public ResponseEntity<TotalGananciasResponseDto> obtenerGananciasPorRango(@RequestParam(required = false)  LocalDate inicio,@RequestParam(required = false) LocalDate fin){
+
+        if (inicio == null || fin == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TotalGananciasResponseDto gananciasResponseDto=reporteService.obtenerGananciasPorRango(inicio,fin);
+
+        return ResponseEntity.ok(gananciasResponseDto);
 
     }
 }
