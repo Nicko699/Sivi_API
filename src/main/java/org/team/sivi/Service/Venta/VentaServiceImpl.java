@@ -184,10 +184,10 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public Page<VentaListarVendResponseDto> filtrarVentasVend(String codigoVenta, String estado, LocalDate desde, LocalDate hasta, Pageable pageable) {
 
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Specification<Venta> spec = Specification.allOf(
-             VentaSpecifications.correoUsuarioEquals(authentication.getName()));
+                VentaSpecifications.correoUsuarioEquals(authentication.getName()));
 
         if (codigoVenta != null && !codigoVenta.trim().isEmpty()) {
             spec = spec.and(VentaSpecifications.codigoVentaLike(codigoVenta));
@@ -197,15 +197,11 @@ public class VentaServiceImpl implements VentaService {
             spec = spec.and(VentaSpecifications.estadoEquals(estado));
         }
 
-        if (desde != null && hasta != null) {
-            spec = spec.and(VentaSpecifications.fechaEntre(desde, hasta));
-        }
+        spec = spec.and(VentaSpecifications.fechaEntre(desde, hasta));
 
-
-        Page<Venta>listaVentas=ventaRepository.findAll(spec,pageable);
+        Page<Venta> listaVentas = ventaRepository.findAll(spec, pageable);
 
         return listaVentas.map(ventaMapper::ventaToVentaListarVendResponseDto);
-
     }
 
     @Transactional

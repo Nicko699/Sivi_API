@@ -72,7 +72,7 @@ public class MarcaServiceImpl implements  MarcaService{
 
             if (Boolean.TRUE.equals(marcaGet.getActivo()) && Boolean.FALSE.equals(editarRequestDto.getActivo()) && !marcaGet.getListaProductos().isEmpty()) {
 
-                throw new BadRequestException("No se puede desactivar la marca por que aún tiene productos asociados a ella");
+                throw new BadRequestException("No se puede desactivar la marca por que aún tiene productos asociados");
 
             }
                 marcaMapper.marcaEditarRequestDtoToMarca(editarRequestDto, marcaGet);

@@ -27,7 +27,7 @@ public class CategoriaController {
         this.categoriaService = categoriaService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','VEND')")
     @GetMapping("/obtenerCategoriasFiltradas")
     public ResponseEntity<Page<CategoriaListaResponseDto>> filtrarCategorias(@RequestParam(required = false) String nombre, @RequestParam(required = false) Boolean activo, Pageable pageable) throws NotFoundException {
 

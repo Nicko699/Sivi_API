@@ -74,7 +74,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         if (Boolean.TRUE.equals(categoria.getActivo()) && Boolean.FALSE.equals(dto.getActivo()) && !categoria.getListaProductos().isEmpty()) {
 
-            throw new BadRequestException("No se puede desactivar la marca por que aún tiene productos asociados a ella");
+            throw new BadRequestException("No se puede desactivar la categoría por que aún tiene productos asociados");
 
         }
 
@@ -95,7 +95,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         if (Boolean.TRUE.equals(categoriaEncontrada.getActivo()) && !categoriaEncontrada.getListaProductos().isEmpty()){
 
-            throw new BadRequestException("No se puede eliminar esta categoría ya que aún posee productos asociados");
+            throw new BadRequestException("No se puede eliminar la categoría por que aún tiene productos asociados");
         }
 
         categoriaRepository.deleteById(id);
